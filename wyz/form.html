@@ -17,7 +17,7 @@
       <label for="two">Two</label>
       <br>
       <span>Picked: {{ picked }}</span>
-      <h3>多选输入</h3>
+          <h3>多选输入,实现全选功能</h3>
     </div>
     <script type="text/javascript">
     	new Vue({
@@ -27,23 +27,51 @@
         }
       })
     </script>
-    <!--多选输入-->
+    <!--多选输入,实现全选功能-->
     <div id='example-3'>
-      <input type="checkbox" id="jack" value="Jack" v-model="checkedNames">
-      <label for="jack">Jack</label>
-      <input type="checkbox" id="john" value="John" v-model="checkedNames">
-      <label for="john">John</label>
-      <input type="checkbox" id="mike" value="Mike" v-model="checkedNames">
-      <label for="mike">Mike</label>
+    	全选：<input type="checkbox"  v-on:click='checkedAll($event)' v-model="checked">
+      <p v-for="item in checkboxData">
+      	<input type="checkbox" :id="item" :value="item" v-model="checkedNames">
+      	<label for="item">{{item}}</label>
+      </p>
       <br>
-      <span>Checked names: {{ checkedNames }}</span>
+      <span>Checked names: {{checkedNames}}</span>
     </div>
     <script type="text/javascript">
       new Vue({
         el: '#example-3',
         data: {
-          checkedNames: []
-        }
+          checkedNames: [],
+          checkboxData:['Jack','John','Mike'],
+          checked:false
+        },
+        methods:{
+		  checkedAll: function($event) {
+		  	var checked=$event.target.checked;
+		  	//console.log(checked);
+		    var _this = this;
+		    if (!checked) {//实现反选
+		      _this.checkedNames = [];
+		    }else{//实现全选
+		      _this.checkedNames = [];
+		      _this.checkboxData.forEach(function(item) {
+		        _this.checkedNames.push(item);
+		      });
+		    }
+		  }
+		},
+		watch: {//深度 watcher
+		  'checkedNames': {
+		    handler: function (val, oldVal) { 
+		      if (this.checkedNames.length === this.checkboxData.length) {
+		        this.checked=true;
+		      }else{
+		        this.checked=false;
+		      }
+		    },
+		    deep: true
+		  }
+		},
       })
     </script>
     <!--选择列表-->
