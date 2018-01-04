@@ -17,7 +17,9 @@
 - 查看当前状态   
    git status          
 - git diff查看不同
-   + git difftool 比较工作目录和暂存区的不同（会进入vi模式，:q可以退出，不过对比需要退出两次）
+   + git diff比较的是工作目录与暂存区的区别
+   + git diff --cached比较的是暂存区与本地仓库的区别
+   + git diff HEAD比较的是工作目录与本地仓库的区别
 - add的逆操作
     + git rm --cached 文件列表
 - 回滚`本地`修改的内容
