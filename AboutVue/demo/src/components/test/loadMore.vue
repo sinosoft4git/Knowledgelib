@@ -1,5 +1,36 @@
 <template>
 	<div class="loadMore">
+		<div class='swiperMode' v-show="attribute=='auto'">
+			<mt-swipe :auto="3000" :speed='300' :showIndicators='false'>
+			  <mt-swipe-item><img src="../../assets/1.jpg" alt="" /></mt-swipe-item>
+			  <mt-swipe-item><img src="../../assets/2.jpg" alt="" /></mt-swipe-item>
+			  <mt-swipe-item><img src="../../assets/3.jpg" alt="" /></mt-swipe-item>
+			</mt-swipe>
+		</div>
+		<div class='swiperMode' v-show="attribute=='defaultIndex'">
+			<mt-swipe :auto="3000" :speed='300' :defaultIndex='2'>
+			  <mt-swipe-item><img src="../../assets/2.jpg" alt="" /></mt-swipe-item>
+			  <mt-swipe-item><img src="../../assets/3.jpg" alt="" /></mt-swipe-item>
+			  <mt-swipe-item><img src="../../assets/swip01.jpg" alt="" /></mt-swipe-item>
+			</mt-swipe>
+		</div>
+		<div class='swiperMode' v-show="attribute=='continuous'">
+			<mt-swipe :auto="3000" :speed='300' :continuous='false'>
+			  <mt-swipe-item><img src="../../assets/3.jpg" alt="" /></mt-swipe-item>
+			  <mt-swipe-item><img src="../../assets/swip01.jpg" alt="" /></mt-swipe-item>
+			  <mt-swipe-item><img src="../../assets/swip02.jpg" alt="" /></mt-swipe-item>
+			</mt-swipe>
+		</div>
+		<!--:prevent='true' :stopPropagation='true'--> 
+		<div class='swiperMode' v-show="attribute=='prevent'"> 
+			<mt-swipe :auto="0" :speed='300' :showIndicators='false'  @change="handleChange" ref="swipe">
+			  <mt-swipe-item><img src="../../assets/swip01.jpg" alt="" /></mt-swipe-item>
+			  <mt-swipe-item><img src="../../assets/swip02.jpg" alt="" /></mt-swipe-item>
+			  <mt-swipe-item><img src="../../assets/swip03.jpg" alt="" /></mt-swipe-item>
+			  <mt-swipe-item><img src="../../assets/swip04.jpg" alt="" /></mt-swipe-item>
+			</mt-swipe>
+			<div class='nextImg' @click='nextImg()'></div>
+		</div>
 		<div class='addMore'>
 			<h1>上拉加载</h1>
 			<mt-loadmore :autoFill=false :top-method="loadTop" :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="loadmore" @top-status-change="handleTopChange"  bottomPullText='上拉加载'>
@@ -20,17 +51,67 @@
 </template>
 
 <script>
-	import {spinner,loadmore} from 'mint-ui'
+	import {spinner,loadmore,Toast,Swipe,SwipeItem} from 'mint-ui'
 	export default{
 		name:'loadMore',
+		components:{
+      'mt-swipe':Swipe,
+      'mt-swipe-item':SwipeItem
+    },
 		data(){
 			return {
 				allLoaded:false,
 				topStatus: '',
-				list:[0,1,2,3,5,6,7,8,9,10,11,12,13,14,15]
+				list:[0,1,2,3,5,6,7,8,9,10],
+				attribute:'prevent',//prevent：是否阻止默认行为； continuous：是否循环播放；auto:自动播放 defaultIndex：初始索引
+				activeIndex:'', // 当前索引值
+				nextVal:'',// 下一个索引值
+				prevVal:'',// 上一个索引值
 			}
 		},
+		beforeUpdate () {
+			console.log('----即将更新swipe----------')
+		  this.activeIndex = this.$refs.swipe.index
+		},
+		watch: {
+		  activeIndex: function (val, oldVal) {
+		    console.log('newIndex: %s, oldIndex: %s', val, oldVal)
+		    console.log(this.$refs.swipe.pages.length)
+		    var len = this.$refs.swipe.pages.length;
+		    this.nextVal =(val+1)==len?0:val+1
+		    this.prevVal = (val-1)<0?(len-1):val-1
+		    this.$refs.swipe.pages[this.nextVal].style.display = 'block'
+				this.$refs.swipe.pages[this.nextVal].style.transform = 'translateX(calc(100% + 0.83rem))'
+				this.$refs.swipe.pages[this.prevVal].style.transform = 'translateX(calc(-100% - 0.83rem))'
+				this.$refs.swipe.pages[this.prevVal].style.display = 'block'
+		    // TODO
+		  }
+		},
+		mounted() {
+			console.log(this.$refs.swipe)//.dragState.nextPage
+			setTimeout(()=>{
+				this.$refs.swipe.pages[this.nextVal].style.display = 'block'
+				this.$refs.swipe.pages[this.nextVal].style.transform = 'translateX(calc(100% + 0.83rem))'
+				this.$refs.swipe.pages[this.prevVal].style.display = 'block'
+				this.$refs.swipe.pages[this.prevVal].style.transform = 'translateX(calc(-100% - 0.83rem))'
+				this.$refs.swipe.$refs.wrap.style.overflow='inherit'
+			},10)
+    },
 		methods:{
+			// swper方法handleChange
+			nextImg(){
+				this.$refs.swipe.next();
+			},
+			handleChange(index){
+//				var len = this.$refs.swipe.pages.length;
+//				var nextId = (index+1)==len?0:index+1
+//				this.$refs.swipe.pages[nextId].style.display = 'block'
+//				this.$refs.swipe.pages[nextId].style.transform = 'translateX(calc(100% + 0.83rem))'
+			},
+			getHandle(cur){
+				alert(cur)
+			},
+			// loadMore方法--------------start
 			handleTopChange(status) {
         this.topStatus = status;
       },
@@ -39,21 +120,18 @@
 			  this.$refs.loadmore.onTopLoaded();
 			},
 			loadBottom() {
-				
-//			  setTimeout(() => {
 			    let  last = this.list[this.list.length - 1];
 			    
 			    for (let i = 1; i <= 10; i++) {
 			      this.list.push(last + i);
 			    }
-//			  }, 2500);
-//			  var last = this.list[this.list.length - 1];
-			  if(last>49){
-			    	this.allLoaded = true;// 若数据已全部获取完毕
-			  }
 			  this.$refs.loadmore.onBottomLoaded();
-			  
+			  if(last>39){
+			    	this.allLoaded = true;// 若数据已全部获取完毕
+			    	Toast({message:'没有更多了'})
+			  }
 			},
+			// 
 		}
 	}
 </script>
@@ -66,11 +144,12 @@
   line-height: 2.22rem;
   background-color: #fafafa;
 }
-.loadMore{
+.addMore{
 	position: absolute;
-	top: 0;
+	top: 13.88rem;
 	left: 0;
 	width: 100%;
+	overflow: scroll;
 }
 .mint-loadmore-bottom,.mint-loadmore-top {
     color: #9a9a9a;
@@ -84,5 +163,20 @@
 	text-align: center;
 	line-height: 2.77rem;
 	border-bottom: 0.01rem solid #fafafa;
+}
+/*奇数(odd)行样式  偶数(even) */
+.loadList li:nth-of-type(even){background-color: #fcfcfc;}
+/*---------swiper样式------------*/
+.swiperMode{height:11.66rem;position: absolute;top: 0;width: 100%;padding: 0.83rem 1.83rem 0.83rem 0.83rem;}
+.nextImg{height: 100%;width: 1.83rem;position: absolute;right:0 ;top: 0;}
+.mint-swipe{overflow: inherit;}
+.mint-swipe .mint-swipe-items-wrap{overflow: inherit !important;}
+.mint-swipe-items-wrap > div {
+	margin-right:0.83rem;
+	width: initial;
+}
+.mint-swipe-item{
+	margin-right:0.83rem;
+	width: initial;
 }
 </style>
