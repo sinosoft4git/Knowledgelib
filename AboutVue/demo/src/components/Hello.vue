@@ -9,7 +9,7 @@
     </ul>
     <ul class='router'>
       <li><a href="#/test/mintDemo" target="_self">mint实例展示</a></li>
-      <li><a href="#/test/teeth" target="_self">teeth项目实例展示</a></li>
+      <li><a href="#/test/picker" target="_self">picker项目实例展示</a></li>
       <li><a href="#/test/order" target="_self">order实例展示</a></li>
       <li><a href="#/test/loadMore" target="_self">loadMore实例展示</a></li>
       <li><a href="#/test/upLoadImg" target="_self">upLoadImg实例展示</a></li>

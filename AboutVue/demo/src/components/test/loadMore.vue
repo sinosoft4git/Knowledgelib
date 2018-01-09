@@ -23,11 +23,19 @@
 		</div>
 		<!--:prevent='true' :stopPropagation='true'--> 
 		<div class='swiperMode' v-show="attribute=='prevent'"> 
-			<mt-swipe :auto="0" :speed='300' :showIndicators='false'  @change="handleChange" ref="swipe">
-			  <mt-swipe-item><img src="../../assets/swip01.jpg" alt="" /></mt-swipe-item>
-			  <mt-swipe-item><img src="../../assets/swip02.jpg" alt="" /></mt-swipe-item>
-			  <mt-swipe-item><img src="../../assets/swip03.jpg" alt="" /></mt-swipe-item>
-			  <mt-swipe-item><img src="../../assets/swip04.jpg" alt="" /></mt-swipe-item>
+			<mt-swipe :auto="0" :speed='500' :showIndicators='false' :defaultIndex='defaultVal' @change="handleChange" ref="swipe">
+			  <mt-swipe-item>
+			  	<img src="../../assets/swip01.jpg" alt="" @click='getToLink($refs.swipe.index)'/>
+			  </mt-swipe-item>
+			  <mt-swipe-item>
+			  	<img src="../../assets/swip02.jpg" alt="" @click='getToLink($refs.swipe.index)'/>
+			  </mt-swipe-item>
+			  <mt-swipe-item>
+			  	<img src="../../assets/swip03.jpg" alt="" @click='getToLink($refs.swipe.index)'/>
+			  </mt-swipe-item>
+			  <mt-swipe-item>
+			  	<img src="../../assets/swip04.jpg" alt="" @click='getToLink($refs.swipe.index)'/>
+			  </mt-swipe-item>
 			</mt-swipe>
 			<div class='nextImg' @click='nextImg()'></div>
 		</div>
@@ -54,10 +62,6 @@
 	import {spinner,loadmore,Toast,Swipe,SwipeItem} from 'mint-ui'
 	export default{
 		name:'loadMore',
-		components:{
-      'mt-swipe':Swipe,
-      'mt-swipe-item':SwipeItem
-    },
 		data(){
 			return {
 				allLoaded:false,
@@ -67,49 +71,70 @@
 				activeIndex:'', // 当前索引值
 				nextVal:'',// 下一个索引值
 				prevVal:'',// 上一个索引值
+				defaultVal:0,// 默认展示索引值
 			}
 		},
+		beforeCreate(){document.title='swiper&&loadmore'},
+		created(){this.defaultVal = JSON.parse(sessionStorage.getItem('curIndex'))?JSON.parse(sessionStorage.getItem('curIndex')):0
+			},
 		beforeUpdate () {
 			console.log('----即将更新swipe----------')
 		  this.activeIndex = this.$refs.swipe.index
 		},
 		watch: {
 		  activeIndex: function (val, oldVal) {
+//		  	sessionStorage.setItem('curIndex',val)
 		    console.log('newIndex: %s, oldIndex: %s', val, oldVal)
 		    console.log(this.$refs.swipe.pages.length)
+		    // TODO
 		    var len = this.$refs.swipe.pages.length;
 		    this.nextVal =(val+1)==len?0:val+1
 		    this.prevVal = (val-1)<0?(len-1):val-1
-		    this.$refs.swipe.pages[this.nextVal].style.display = 'block'
+	    	this.$refs.swipe.pages[this.nextVal].style.display = 'block'
 				this.$refs.swipe.pages[this.nextVal].style.transform = 'translateX(calc(100% + 0.83rem))'
 				this.$refs.swipe.pages[this.prevVal].style.transform = 'translateX(calc(-100% - 0.83rem))'
 				this.$refs.swipe.pages[this.prevVal].style.display = 'block'
-		    // TODO
+				
 		  }
 		},
 		mounted() {
-			console.log(this.$refs.swipe)//.dragState.nextPage
-			setTimeout(()=>{
-				this.$refs.swipe.pages[this.nextVal].style.display = 'block'
-				this.$refs.swipe.pages[this.nextVal].style.transform = 'translateX(calc(100% + 0.83rem))'
-				this.$refs.swipe.pages[this.prevVal].style.display = 'block'
-				this.$refs.swipe.pages[this.prevVal].style.transform = 'translateX(calc(-100% - 0.83rem))'
-				this.$refs.swipe.$refs.wrap.style.overflow='inherit'
-			},10)
+			console.log(this.$refs.swipe)
+			
+			this.nextVal =this.$refs.swipe.$parent.nextVal
+		  this.prevVal = this.$refs.swipe.$parent.prevVal
+			this.$refs.swipe.$refs.wrap.style.overflow='inherit'// 设置可以同时显示多张轮播图
     },
 		methods:{
 			// swper方法handleChange
 			nextImg(){
 				this.$refs.swipe.next();
 			},
-			handleChange(index){
-//				var len = this.$refs.swipe.pages.length;
-//				var nextId = (index+1)==len?0:index+1
-//				this.$refs.swipe.pages[nextId].style.display = 'block'
-//				this.$refs.swipe.pages[nextId].style.transform = 'translateX(calc(100% + 0.83rem))'
+			getToLink(cur){
+				sessionStorage.setItem('curIndex',cur)
+				console.log(cur)
+				setTimeout(()=>{
+					switch(cur)
+					{
+						case 0:
+						  window.location.href='#/test/upLoadImg'
+						  break;
+						case 1:
+							window.location.href='#/test/picker'
+					  	break;
+					  case 2:
+					  	window.location.href='#/test/order'
+					  	break;
+					  case 3:
+					  	window.location.href='#/test/mintDemo'
+					  	break;
+						default:
+							window.location.href='#/test/timePicker'
+					}
+				},1000)
+				
 			},
-			getHandle(cur){
-				alert(cur)
+			handleChange(index){// 轮播图变动更换index
+				sessionStorage.setItem('curIndex',index)
 			},
 			// loadMore方法--------------start
 			handleTopChange(status) {
@@ -131,7 +156,6 @@
 			    	Toast({message:'没有更多了'})
 			  }
 			},
-			// 
 		}
 	}
 </script>
@@ -170,7 +194,7 @@
 .swiperMode{height:11.66rem;position: absolute;top: 0;width: 100%;padding: 0.83rem 1.83rem 0.83rem 0.83rem;}
 .nextImg{height: 100%;width: 1.83rem;position: absolute;right:0 ;top: 0;}
 .mint-swipe{overflow: inherit;}
-.mint-swipe .mint-swipe-items-wrap{overflow: inherit !important;}
+/*.mint-swipe .mint-swipe-items-wrap{overflow: inherit !important;}*/
 .mint-swipe-items-wrap > div {
 	margin-right:0.83rem;
 	width: initial;

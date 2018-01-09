@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Hello from '@/components/Hello'
 import mintDemo from '@/components/test/mintDemo'
-import teeth from '@/components/test/teeth'
+import picker from '@/components/test/picker'
 import order from '@/components/test/order'
 import loadMore from '@/components/test/loadMore'
 import upLoadImg from '@/components/test/upLoadImg'
@@ -24,11 +24,11 @@ export default new Router({
       name: 'mintDemo',
       component: mintDemo
     },
-    // teeth
+    // picker
     {
-      path: '/test/teeth',
-      name: 'teeth',
-      component: teeth
+      path: '/test/picker',
+      name: 'picker',
+      component: picker
     },
     // teeth
     {
