@@ -1,10 +1,57 @@
+<!--mint-ui组件实例
+	@wyz 2018.01.10
+	1）dateTime Picker使用
+	2）二级联动picker使用（存在问题尚未解决：二级菜单数据不能回到最初默认值）
+	3）tab-container与loadmore联合使用
+	4）tab-container与infinite-scroll联合使用
+	
+-->
 <template>
 	<div class='pickerMode'>
+		<div>
+			
+		
 		<mt-button @click.native="datePicker" size='large'>{{dateVal}}</mt-button>
 		
 		<mt-button @click.native="addrClick" type='primary' size='large'>{{addrVal}}</mt-button>
 		
-		
+		</div>
+		<div class='tabDiv'>
+			<mt-button size='normal' @click.native="active='tab-container1'">tab1</mt-button>
+			<mt-button size='normal' @click.native="active='tab-container2'">tab2</mt-button>
+			<mt-button size='normal' @click.native="active='tab-container3'">tab3</mt-button>
+			<mt-tab-container v-model="active" :swipeable=true>
+			  <mt-tab-container-item id="tab-container1">
+			    <mt-cell v-for="n in 10" title="tab-container 1"></mt-cell>
+			  </mt-tab-container-item>
+			  <mt-tab-container-item id="tab-container2">
+			    <mt-cell v-for="n in 5" title="tab-container 2"></mt-cell>
+			    <!---------------infinite-scroll---------------->
+			    <ul	 v-infinite-scroll="loadMore"
+					  infinite-scroll-disabled="loading"
+					  infinite-scroll-distance="10">
+					  <li v-for="item in list1" class='moreLi'>{{ item }}</li>
+					  <span v-show="topStatus !== 'loading'" :class="{ 'rotate': topStatus === 'drop' }" class='s_margin'><mt-spinner :size='20' color="#26a2ff" type="fading-circle"></mt-spinner></span>
+					</ul>
+					<!---------------infinite-scroll---------------->
+			  </mt-tab-container-item>
+			  <mt-tab-container-item id="tab-container3">
+			  	<!---------------loadmore---------------->
+			  	<mt-loadmore :autoFill=false  :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="loadmore" @top-status-change="handleTopChange"  bottomPullText='上拉加载'>
+						<div v-for='val in list'>
+							<mt-cell  :title="'tab-container  '+val"></mt-cell>
+						</div>
+						
+						<div slot="top" class="mint-loadmore-top">
+		            <span v-show="topStatus !== 'loading'" :class="{ 'rotate': topStatus === 'drop' }" class='s_margin'><mt-spinner :size='20' color="#26a2ff" style='margin: auto;'type="fading-circle"></mt-spinner></span><!--↓-->
+		            <span v-show="topStatus === 'loading'">Loading...</span>
+		        </div>
+		        <div slot = 'bottom'class="mint-loadmore-bottom"><span class="mint-loadmore-text">上拉加载</span></div>
+					</mt-loadmore>
+			    <!---------------loadmore---------------->
+			  </mt-tab-container-item>
+			</mt-tab-container>
+		</div>
 		<div>
 			<!--日期选择器-->
       <mt-datetime-picker
@@ -19,7 +66,12 @@
 		</div>
 		<div  class='addrDiv'>
 			<mt-popup v-model='showAddr'  popup-transition="popup-fade"  position="middle">
+				<div>
+					<mt-button type='primary'  size='large' @click='sureCheck'>confirm</mt-button>
+  				<mt-button size='large' @click='cancelCheck'>cancel</mt-button>
+				</div>
 				<mt-picker ref="addrPic" :slots="areaSlots" @change="onValuesChange"></mt-picker>
+				
 			</mt-popup>
 		</div>
 			
@@ -28,7 +80,7 @@
 </template>
 
 <script>
-	import { Picker,popup } from 'mint-ui'
+	import { Picker,popup,Toast } from 'mint-ui'
 	import {address,add} from '../../assets/js/city_abc.js'
 	export default{
 		name:'pickerMode',
@@ -44,6 +96,7 @@
         addrId:'A',// 地址索引
         provinceIndex:1,
         cityLetter:'A',
+        cityName:'',
         areaSlots:[
         {
             flex: 1,
@@ -56,10 +109,19 @@
             className: 'slot2'
           }, {
             flex: 1,
-            values: address['A'],//返回address的所有属性
+            values: Object.values(address)[0],//address,//返回address的所有属性
             className: 'slot3',
             textAlign: 'center'
           }],
+          // tab-container变量
+          active:'tab-container1',
+          // loadmore变量
+          topStatus: '',
+					list1:[1,2,3,4,5],
+					list:[0,1,2,3],
+          allLoaded:false,
+          // Infinite scroll变量
+          loading:false,
 			}
 		},
 		beforeCreate(){document.title='pickerDemo';},
@@ -101,14 +163,53 @@
 				this.addrId = values[0]
 				console.log(this.addrId=='A')
 				if(this.addrId =='A'){
-					
+//					this.areaSlots[2].values=address['A']
 				}else{
 					this.cityLetter = values[0]
 					this.areaSlots[2].values = address[this.addrId]
-//					picker.setSlotValue( cityLetter,values[1]);
+					picker.setSlotValue( this.cityLetter,values[1]);
 				}
-					this.addrVal = this.cityLetter+'-'+ values[1]
+					this.cityName =  values[1]
 					return false;
+			},
+			sureCheck(){
+				this.showAddr = false
+				this.addrVal = this.cityLetter+'-'+ this.cityName
+				
+			},
+			cancelCheck(){
+				this.showAddr = false
+			},
+			// loadMore方法--------------start
+			handleTopChange(status) {
+        this.topStatus = status;
+      },
+			loadBottom() {
+			    let  last = this.list[this.list.length - 1];
+			    
+			    for (let i = 1; i <= 10; i++) {
+			      this.list.push(last + i);
+			    }
+			  this.$refs.loadmore.onBottomLoaded();
+			  if(last>39){
+			    	this.allLoaded = true;// 若数据已全部获取完毕
+			    	Toast({message:'没有更多了'})
+			  }
+			},
+			// 
+			loadMore(){
+				// 防止多次加载
+			  if (this.loading) {
+			    return false
+			  }
+				this.loading = true;
+			  setTimeout(() => {
+			    let last = this.list1[this.list1.length - 1];
+			    for (let i = 1; i <= 5; i++) {
+			      this.list1.push(last + i);
+			    }
+			    this.loading = false;
+			  }, 2500);
 			},
 		},
 		
@@ -121,4 +222,17 @@
   }
 .addrDiv  .mint-popup{width: 90%;border-radius: 0.13rem;}
   .addrDiv{width: 90%;}
+  .tabDiv{position: absolute;top: 8.33rem;left:0;width: 100%;}
+  .moreLi{
+	width: 100%;
+	height: 2.77rem;
+	text-align: center;
+	line-height: 2.77rem;
+	border-bottom: 0.01rem solid #fafafa;
+}
+.moreLi:nth-of-type(even){background-color: #fcfcfc;}
+.s_margin{padding: 0 45%;}
+.tabDiv .mint-tab-container-wrap{
+  min-height: 617px!important;
+}
 </style>
