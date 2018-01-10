@@ -4,7 +4,6 @@
 	2）二级联动picker使用（存在问题尚未解决：二级菜单数据不能回到最初默认值）
 	3）tab-container与loadmore联合使用
 	4）tab-container与infinite-scroll联合使用
-	
 -->
 <template>
 	<div class='pickerMode'>

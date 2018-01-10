@@ -1,3 +1,9 @@
+<!--mint-ui组件实例
+	@wyz 2018.01.10
+	1）loadMore使用
+	2）swiper组件使用
+	3）手动修改swiper组件实现跑马灯轮播效果
+-->
 <template>
 	<div class="loadMore">
 		<div class='swiperMode' v-show="attribute=='auto'">
