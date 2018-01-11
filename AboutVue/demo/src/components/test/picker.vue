@@ -2,6 +2,7 @@
 	@wyz 2018.01.10
 	1）dateTime Picker使用
 	2）二级联动picker使用（存在问题尚未解决：二级菜单数据不能回到最初默认值）
+	01.11结合jQuery解决问题
 	3）tab-container与loadmore联合使用
 	4）tab-container与infinite-scroll联合使用
 -->
@@ -21,10 +22,10 @@
 			<mt-button size='normal' @click.native="active='tab-container3'">tab3</mt-button>
 			<mt-tab-container v-model="active" :swipeable=true>
 			  <mt-tab-container-item id="tab-container1">
-			    <mt-cell v-for="n in 10" title="tab-container 1"></mt-cell>
+			    <mt-cell v-for="n in 10" :key='n' title="tab-container 1"></mt-cell>
 			  </mt-tab-container-item>
 			  <mt-tab-container-item id="tab-container2">
-			    <mt-cell v-for="n in 5" title="tab-container 2"></mt-cell>
+			    <mt-cell v-for="n in 5" :key='n' title="tab-container 2"></mt-cell>
 			    <!---------------infinite-scroll---------------->
 			    <ul	 v-infinite-scroll="loadMore"
 					  infinite-scroll-disabled="loading"
@@ -65,12 +66,10 @@
 		</div>
 		<div  class='addrDiv'>
 			<mt-popup v-model='showAddr'  popup-transition="popup-fade"  position="middle">
-				<div>
-					<mt-button type='primary'  size='large' @click='sureCheck'>confirm</mt-button>
-  				<mt-button size='large' @click='cancelCheck'>cancel</mt-button>
-				</div>
-				<mt-picker ref="addrPic" :slots="areaSlots" @change="onValuesChange"></mt-picker>
-				
+				<mt-picker ref="addrPic" :showToolbar='true' :value-key='cityLetter' :slots="areaSlots" @change="onValuesChange">
+	  				<mt-button  @click='cancelCheck'>取消</mt-button>
+	  				<mt-button type='primary'   @click='sureCheck'>确定</mt-button>
+				</mt-picker>
 			</mt-popup>
 		</div>
 			
@@ -80,7 +79,8 @@
 
 <script>
 	import { Picker,popup,Toast } from 'mint-ui'
-	import {address,add} from '../../assets/js/city_abc.js'
+	import $ from 'jquery'
+	import {address,letter,add} from '../../assets/js/city_abc.js'
 	export default{
 		name:'pickerMode',
 		data(){
@@ -95,22 +95,31 @@
         addrId:'A',// 地址索引
         provinceIndex:1,
         cityLetter:'A',
+        letterArr:Object.keys(address),
+        cityArr:Object.values(address),
         cityName:'',
+        num:1,
         areaSlots:[
         {
             flex: 1,
-            values:  Object.keys(address),
+            values:  letter,
             className: 'slot1',
-            textAlign: 'center'
+            textAlign: 'center',
+//          defaultIndex:0,
+//          value:'A',
+//          valueKey:0,
           }, {
             divider: true,
             content: '-',
             className: 'slot2'
           }, {
             flex: 1,
-            values: Object.values(address)[0],//address,//返回address的所有属性
+            values: '',//address,//返回address的所有属性
             className: 'slot3',
-            textAlign: 'center'
+            textAlign: 'center',
+            defaultIndex:0,
+            value:Object.values(address)[0],
+            valueKey:0,
           }],
           // tab-container变量
           active:'tab-container1',
@@ -125,10 +134,15 @@
 		},
 		beforeCreate(){document.title='pickerDemo';},
 		created(){
-			this.areaSlots[2].values = address[this.addrId]
+			setTimeout(() => {
+				this.areaSlots[0].values = this.letterArr // 城市首字母
+				this.areaSlots[2].values = this.cityArr[0] // 
+//				this.areaSlots[2].defaultIndex=0
+//	      this.areaSlots[2].value=Object.values(address)[0][0]
+//	      this.areaSlots[2].valueKey=0
+			}, 800)
 		},
 		mounted(){
-			console.log(this.$refs.addrPic)
 			this.$nextTick(() => {
 		    setTimeout(() => {
 		      // 利用索引初始化默认选中的省份和城市
@@ -156,20 +170,25 @@
 				this.showAddr = true
 			},
 			onValuesChange(picker, values){
-				console.log(picker)
-				console.log('------onValuesChange-----')
-				console.log(values)
-				this.addrId = values[0]
-				console.log(this.addrId=='A')
-				if(this.addrId =='A'){
-//					this.areaSlots[2].values=address['A']
-				}else{
-					this.cityLetter = values[0]
-					this.areaSlots[2].values = address[this.addrId]
-					picker.setSlotValue( this.cityLetter,values[1]);
+				console.log('------onValuesChange-----'+this.num)
+				var index = (this.letterArr).indexOf(values[0])
+				var val,selectVal;
+				setTimeout(()=>{
+					val = $('.slot1 .picker-selected').text()
+					val = val.trim()
+				if(this.num>2){
+						this.areaSlots[2].values = address[val]
+						this.cityLetter = val
 				}
-					this.cityName =  values[1]
-					return false;
+				
+				if(values[1]==undefined){
+					this.cityName = '没有对应城市'
+				}else{
+					this.cityName = values[1]
+				}
+				},100)
+				this.num++
+				console.log(values)
 			},
 			sureCheck(){
 				this.showAddr = false
@@ -220,6 +239,7 @@
   	background-color: #fff;
   }
 .addrDiv  .mint-popup{width: 90%;border-radius: 0.13rem;}
+.addrDiv .mint-button--normal{width: 49%;}
   .addrDiv{width: 90%;}
   .tabDiv{position: absolute;top: 8.33rem;left:0;width: 100%;}
   .moreLi{
@@ -233,5 +253,8 @@
 .s_margin{padding: 0 45%;}
 .tabDiv .mint-tab-container-wrap{
   min-height: 617px!important;
+}
+.slot1{
+	text-align: left;
 }
 </style>
