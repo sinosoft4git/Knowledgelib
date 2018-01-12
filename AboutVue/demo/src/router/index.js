@@ -7,7 +7,7 @@ import order from '@/components/test/order'
 import loadMore from '@/components/test/loadMore'
 import upLoadImg from '@/components/test/upLoadImg'
 import timePicker from '@/components/test/timePicker'
-
+import vRouter from '@/components/test/vRouter'
 
 Vue.use(Router)
 
@@ -53,6 +53,12 @@ export default new Router({
       path: '/test/timePicker',
       name: 'timePicker',
       component: timePicker
+    },
+    //vRouter
+    {
+      path: '/test/vRouter',
+      name: 'vRouter',
+      component: vRouter
     },
   ]
 })

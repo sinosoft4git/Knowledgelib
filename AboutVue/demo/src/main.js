@@ -6,7 +6,7 @@ import MintUI from 'mint-ui'
 import 'mint-ui/lib/style.css'
 import router from './router'
 import 'element-ui/lib/theme-chalk/index.css'
-
+import store from './store/store.js'
 //引入element-ui
 import ElementUI from 'element-ui'
 
@@ -18,6 +18,7 @@ Vue.use(MintUI)
 new Vue({
   el: '#app',
   router,
+  store,//使用store
   template: '<App/>',
   components: { App }
 })

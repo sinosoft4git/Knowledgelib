@@ -14,6 +14,7 @@
       <li><a href="#/test/loadMore" target="_self">loadMore实例展示</a></li>
       <li><a href="#/test/upLoadImg" target="_self">upLoadImg实例展示</a></li>
       <li><a href="#/test/timePicker" target="_self">timePicker实例展示</a></li>
+      <li><a href="#/test/vRouter" target="_self">vuex实例展示</a></li>
     </ul>
     <div>
       <h4>基于Vue.2X的html5上传图片组件</h4>
