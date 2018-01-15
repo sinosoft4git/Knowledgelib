@@ -4,30 +4,26 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
     <title>vue入门</title>
-    <link href="css/mui.min.css" rel="stylesheet"/>
-    <script src="js/mui.min.js"></script>
     <script src="https://unpkg.com/vue"></script>
-    
-    <script type="text/javascript" charset="utf-8">
-      	mui.init();
-    </script>
     <style type="text/css">
     	body{
-    	  text-align: center;
-    	  margin: auto;
+    	  margin: auto;color:#4E4E4E;
     	}
+    	h2{text-align: center;}
     	ol,ul{width:50%;margin:auto;text-align: left;}
+    	#app,#app-7{width:100%;border-bottom: 1px solid #cdcdcd;padding: 1rem;}
+    	.es6{width: 100%;min-height: 5.55rem;background-color: #fefefe;border-bottom: 1px solid #cdcdcd;}
     </style>
 </head>
 <body>
-  <h4>这里是git代码测试</h4>
+	<h2>这里是vue代码测试</h2>
   <div id='app'>
     <input v-model="hello">
     <div>{{hello}}</div>
     <h4>v-on指令</h4>
     <button v-on:click="reverseMessage">逆转消息</button>
     <span v-bind:title="message">
-              鼠标悬停几秒钟查看此处动态绑定的提示信息！
+      鼠标悬停几秒钟查看此处动态绑定的提示信息！
     </span>
     <div>
       <h4>v-if指令</h4>
@@ -37,13 +33,12 @@
     </div>
     <h4>v-for指令</h4>
     <ol>
-      <li v-for="todo in todos">
-        {{ todo.text }}
+      <li v-for="(todo,key) in todos">
+      	<a :href="'#key'+key">{{ todo.text }}</a>
       </li>
     </ol>
-    
   </div>
-  <div id="app-7">
+<div id="app-7">
     <h4>todolist组件</h4>
   <ol>
     <!--
@@ -58,7 +53,171 @@
     </todo-item>
   </ol>
 </div>
-  <script type="text/javascript">
+<a name='key0'>
+	<div class='es6'>
+		
+	</div>
+	<script type="text/javascript">
+	//1. let、const 和 block 作用域
+//let 关键词声明的变量不具备变量提升（hoisting）特性
+		var a = 2;
+		{
+		  let a = 3;//let 和 const 声明只在最靠近的一个块中（花括号内）有效
+		  console.log(a); // 3
+		}
+		console.log(a); // 2
+		{
+			//const 在声明时必须被赋值 否则报语法错误SyntaxError
+		  const ARR = [5,6];//当使用常量 const 声明时，请使用大写变量，如：CAPITAL_CASING
+
+		  ARR.push(7);
+		  console.log(ARR); // [5,6,7]
+
+//		  ARR = 10; // TypeError
+//	const CFF;//const 在声明时必须被赋值
+//	console.log(CFF);// 报错：Uncaught SyntaxError: Missing initializer in const declaration
+		}
+		var funcs = []
+    for (var i = 0; i < 10; i++) {
+        funcs.push(function() { console.log(i) })
+    }
+    funcs.forEach(function(func) {
+        func()
+    })
+   
+// 10个10
+		//2. 箭头函数（Arrow Functions）
+		 var people = (name, age) => {
+        const fullName = 'h' + name
+        return fullName
+    } 
+    console.log(people)
+    //如果缺少()或者{}就会报错
+//  ECMAScript 6 简明教程
+//分类 编程技术
+//ECMAScript 6 目前基本成为业界标准，它的普及速度比 ES5 要快很多，主要原因是现代浏览器对 ES6 的支持相当迅速，尤其是 Chrome 和 Firefox 浏览器，已经支持 ES6 中绝大多数的特性。
+
+//1. let、const 和 block 作用域
+//let 允许创建块级作用域，ES6 推荐在函数中使用 let 定义变量，而非 var：
+var a = 2;
+{
+  let a = 3;
+  console.log(a); // 3
+}
+console.log(a); // 2
+//同样在块级作用域有效的另一个变量声明方式是 const，它可以声明一个常量。ES6 中，const 声明的常量类似于指针，它指向某个引用，也就是说这个「常量」并非一成不变的，如：
+{
+  const ARR = [5,6];
+  ARR.push(7);
+  console.log(ARR); // [5,6,7]
+//ARR = 10; // TypeError
+}
+//有几个点需要注意：
+//let 关键词声明的变量不具备变量提升（hoisting）特性
+//let 和 const 声明只在最靠近的一个块中（花括号内）有效
+//当使用常量 const 声明时，请使用大写变量，如：CAPITAL_CASING
+//const 在声明时必须被赋值
+//2. 箭头函数（Arrow Functions）
+//ES6 中，箭头函数就是函数的一种简写形式，使用括号包裹参数，跟随一个 =>，紧接着是函数体：
+var getPrice = function() {
+  return 4.55;
+};
+ 
+// Implementation with Arrow Function
+var getPrice = () => 4.55;
+//需要注意的是，上面栗子中的 getPrice 箭头函数采用了简洁函数体，它不需要 return 语句，下面这个栗子使用的是正常函数体：
+let arr1 = ['apple', 'banana', 'orange'];
+ 
+let breakfast = arr1.map(fruit => {
+  return fruit + 's';
+});
+ 
+console.log(breakfast); // apples bananas oranges
+//当然，箭头函数不仅仅是让代码变得简洁，函数中 this 总是绑定总是指向对象自身。具体可以看看下面几个栗子：
+function Person() {
+  this.age = 0;
+ 
+  setInterval(function growUp() {
+    // 在非严格模式下，growUp() 函数的 this 指向 window 对象
+    this.age++;
+  }, 1000);
+}
+var person = new Person();
+//我们经常需要使用一个变量来保存 this，然后在 growUp 函数中引用：
+function Person() {
+  var self = this;
+  self.age = 0;
+ 
+  setInterval(function growUp() {
+    self.age++;
+  }, 1000);
+}
+//而使用箭头函数可以省却这个麻烦：
+function Person(){
+  this.age = 0;
+ 
+  setInterval(() => {
+    // |this| 指向 person 对象
+    this.age++;
+  }, 1000);
+}
+ 
+var person = new Person();
+//3. 函数参数默认值
+//ES6 中允许你对函数参数设置默认值：
+let getFinalPrice = (price, tax=0.7) => price + price * tax;
+getFinalPrice(500); // 850
+//4. Spread / Rest 操作符
+//Spread / Rest 操作符指的是 ...，具体是 Spread 还是 Rest 需要看上下文语境。
+//当被用于迭代器中时，它是一个 Spread 操作符：
+function foo(x,y,z) {
+  console.log(x,y,z);
+}
+ 
+let arr = [1,2,3];
+foo(...arr); // 1 2 3
+//当被用于函数传参时，是一个 Rest 操作符：
+function foo(...args) {
+  console.log(args);
+}
+foo( 1, 2, 3, 4, 5); // [1, 2, 3, 4, 5]
+//5. 对象词法扩展
+//ES6 允许声明在对象字面量时使用简写语法，来初始化属性变量和函数的定义方法，并且允许在对象属性中进行计算操作：
+function getCar(make, model, value) {
+  return {
+    // 简写变量
+    make,  // 等同于 make: make
+    model, // 等同于 model: model
+    value, // 等同于 value: value
+ 
+    // 属性可以使用表达式计算值
+    ['make' + make]: true,
+ 
+    // 忽略 `function` 关键词简写对象函数
+    depreciate() {
+      this.value -= 2500;
+    }
+  };
+}
+ 
+let car = getCar('Barret', 'Lee', 40000);
+ console.log(car)
+// output: {
+//     make: 'Barret',
+//     model:'Lee',
+//     value: 40000,
+//     makeKia: true,
+//     depreciate: function()
+// }
+//let objA = [1,2,3];
+//let objB = ['a','b','c']
+let objA = {make: 'Barret',model:'Lee',value: 40000,};
+let objB = {makeKia: true,depreciate: 'hello',model:'Zhang'}
+const obj = Object.assign({}, objA, objB)
+console.log(obj)
+	</script>	
+</a>
+<script type="text/javascript">
     // 注册组件
 Vue.component('todo-item', {
   props: ['todo'],
@@ -95,6 +254,6 @@ var app7 = new Vue({
     })
   	
   	
-  </script>
+</script>
 </body>
 </html>
