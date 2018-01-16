@@ -3,7 +3,7 @@ import Router from 'vue-router'
 import Hello from '@/components/Hello'
 import mintDemo from '@/components/test/mintDemo'
 import picker from '@/components/test/picker'
-import order from '@/components/test/order'
+import msgBox from '@/components/test/msgBox'
 import loadMore from '@/components/test/loadMore'
 import upLoadImg from '@/components/test/upLoadImg'
 import timePicker from '@/components/test/timePicker'
@@ -32,9 +32,9 @@ export default new Router({
     },
     // teeth
     {
-      path: '/test/order',
-      name: 'order',
-      component: order
+      path: '/test/msgBox',
+      name: 'msgBox',
+      component: msgBox
     },
     // teeth
     {
