@@ -76,7 +76,12 @@
 				  cancelButtonHighlight:true,// 取消按钮加粗显示
 				  cancelButtonClass:'canbtn',
 				  inputClass:'cInput',
-				  closeOnClickModal:false})
+				  closeOnClickModal:false,inputValidator: (val) => {  
+    if (val === null) {  
+      return false;//初始化的值为null，不做处理的话，刚打开MessageBox就会校验出错，影响用户体验  
+    }  
+    return !(val.length < 6 || val.length > 8)  
+  }, inputErrorMessage: '密码长度必须在6~8位' })
     		.then(({ value, action }) => {
 				 console.log(value, action)
 				},err => {
