@@ -273,6 +273,83 @@ console.log(`Hi ${user}!`); // Hi Barret!
     console.log(s.repeat(3)) // 'hehehe'
     //如果你带入小数, Math.floor(num) 来处理
  console.log(Math.floor(3.5))
+ function *infiniteNumbers() {
+  var n = 3,m='hello';
+  while (n<6){
+    yield n++;
+  }
+}
+ 
+var numbers = infiniteNumbers(); // returns an iterable object
+ console.log(numbers.next())
+ console.log(numbers.next())
+ console.log(numbers.next())
+ console.log(numbers.next())
+numbers.next(); // { value: 1, done: false }
+numbers.next(); // { value: 2, done: false }
+numbers.next(); // { value: 3, done: false }
+let nicknames = ['di', 'boo', 'punkeye'];
+nicknames.size = 3;
+for (let nickname of nicknames) {
+  console.log(nickname);
+}
+// 结果: di, boo, punkeye
+let nicknames1 = ['di', 'boo', 'punkeye'];
+nicknames1.size = 3;
+for (let nickname in nicknames1) {
+  console.log(nickname);
+}
+//Result: 0, 1, 2, size
+console.log(nicknames1)
+var myMap = new Map();
+ 
+var keyString = "a string",
+    keyObj = {},
+    keyFunc = function () {};
+ 
+// 设置值
+myMap.set(keyString, "value 与 'a string' 关联");
+myMap.set(keyObj, "value 与 keyObj 关联");
+myMap.set(keyFunc, "value 与 keyFunc 关联");
+ 
+myMap.size; // 3
+ 
+// 获取值
+myMap.get(keyString);    // "value 与 'a string' 关联"
+myMap.get(keyObj);       // "value 与 keyObj 关联"
+myMap.get(keyFunc);      // "value 与 keyFunc 关联"
+console.log(myMap)
+
+let w = new WeakMap();
+//w.set('a', 'b'); 
+// Uncaught TypeError: Invalid value used as weak map key
+ 
+var o1 = {},
+    o2 = function(){},
+    o3 = window;
+ 
+w.set(o1, 37);
+w.set(o2, "azerty");
+w.set(o3, undefined);
+ 
+w.get(o3); // undefined, because that is the set value
+ 
+w.has(o1); // true
+
+w.delete(o1);
+
+w.has(o1); // false
+
+let mySet = new Set([1, 1, 2, 2, 3, 3]);
+mySet.size; // 3
+mySet.has(1); // true
+mySet.add('strings');// size+1  4
+mySet.add({ a: 1, b:2 });// size+1  5
+mySet.add('3'); // size+1  6
+mySet.add(3);// size不变
+console.log(mySet.size)
+console.log(mySet)
+
 	</script>	
 </a>
 <script type="text/javascript">
