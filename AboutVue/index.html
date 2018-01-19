@@ -350,6 +350,189 @@ mySet.add(3);// size不变
 console.log(mySet.size)
 console.log(mySet)
 
+console.log('-------mySet.forEach-------');
+mySet.forEach((item) => {
+  console.log(item);
+});
+
+ console.log('-------mySet--for-------');
+for (let value of mySet) {
+  console.log(value);
+}
+
+console.log('-------mySet--delete-------');
+mySet.delete(3)// 删除指定值 且之后索引自动更新   
+console.log(mySet.delete(2))// 删除成功返回true
+console.log(mySet.delete(5))// 失败返回false
+console.log(mySet)
+
+console.log('-------mySet--clear-------');
+setTimeout(()=>{
+	mySet.clear()// 删除对象所有值 size归0
+	console.log(mySet.size)// 0
+	console.log(mySet)
+},2500)
+
+var ws = new WeakSet();
+var obj1 = {};
+var cc=funcs;
+
+ws.add(window);
+ws.add(obj1);
+//ws.add(foo);
+console.log(ws)
+//cc='123'
+console.log(foo)
+ws.add(cc);
+console.log('ws.has(window)'+ws.has(window)); // true
+console.log('ws.has(foo)'+ws.has(foo)); // false, foo 没有添加成功
+
+    
+
+ws.delete(window); // 从结合中删除 window 对象
+console.log(ws.has(window));    // false, window 对象已经被删除
+console.log(ws)
+console.log('-------task-------');
+class Task {
+  constructor() {
+    console.log("task instantiated!");
+  }
+ 
+  showId() {
+    console.log(23);
+  }
+
+  static loadAll() {
+    console.log("Loading all tasks..");
+  }
+}
+ 
+console.log(typeof Task); // function
+let task = new Task(); // "task instantiated!"
+task.showId(); // 23
+Task.loadAll(); // "Loading all tasks.."
+//Task.showId(); // Task不能调用非静态方法  TypeError
+//task.loadAll(); // task实例不能顶用static定义的方法 
+console.log('-------task----end---');
+console.log('-------car-------');
+class Car {
+  constructor() {
+    console.log("Creating a new car");
+  }
+  showId() {
+    console.log(23);
+  }
+  static loadAll() {
+    console.log("Loading all tasks..");
+  }
+}
+ 
+class Porsche extends Car {
+  constructor() {
+//  super();
+	 return {awful:true};
+    console.log("Creating Porsche");
+  }
+  selfCar(){
+  	super.showId()
+		//super.loadAll()
+  }
+}
+ 
+let c = new Porsche();
+//c.selfCar()
+console.log(Car.isPrototypeOf(Porsche))
+// Creating a new car
+// Creating Porsche
+
+console.log('-------car----end---');
+console.log('-------Symbol-------');
+var sym = Symbol( "some optional description" );
+console.log(typeof sym); // symbol
+console.log(sym); // Symbol(some optional description)
+
+var o = {
+    val: 10,
+    [ Symbol("random") ]: "I'm a symbol",
+};
+ 
+console.log(Object.getOwnPropertyNames(o)); // val
+//console.log(Object.getOwnPropertySymbols(o));
+console.log('-------iterator 迭代器-------');
+var arr01 = [11,12,13];
+var itr = arr01[Symbol.iterator]();
+ 
+itr.next(); // { value: 11, done: false }
+itr.next(); // { value: 12, done: false }
+itr.next(); // { value: 13, done: false }
+ 
+itr.next(); // { value: undefined, done: true }
+
+Object.prototype[Symbol.iterator] = function(){  
+    let index = 0;  
+    let propKeys = Reflect.ownKeys(param);  
+    return {  
+        next() {  
+            if (index < propKeys.length) {  
+                let key = propKeys[index];  
+                index++;  
+                return { value: [key, param[key]], done: false};  
+            } else {  
+                return { done: true };  
+            }  
+        }  
+    }  
+}  
+var param ={"cardState": "体检卡状态",
+						[ Symbol("keyWord") ]: "卡名称关键字",
+						[ Symbol("payDate") ]: "购买时间2018-07-01"}
+console.log([...param]);//用Spread操作符展开iterable对象 
+var itr1= param[Symbol.iterator]();
+console.log(itr1.next()); // {value: Array(2), done: false}
+console.log(itr1.next()); // {value: Array(2), done: false}
+console.log(itr1.next()); // {value: Array(2), done: false}
+console.log(itr1.next()); // {done: true}
+
+
+var strs = "",arrs = [],num = 2;  
+  
+console.log(strs[Symbol.iterator]);//[Symbol.iterator]()  
+console.log(arrs[Symbol.iterator]);//[Symbol.iterator]()  
+console.log(num[Symbol.iterator]);//undefined 
+console.log(param[Symbol.iterator]);//undefined 
+console.log('-------iterator 迭代器 end-------');
+console.log('-------Generators 生成器-------');
+var p ={"cardState": "体检卡状态","keyWord": "卡名称关键字","payDate": "购买时间2018-07-01"}
+console.log(p)
+function *infiniteParams() {
+	var i=0;
+	alert(p.size)
+  while(i<p.length){
+  	yield   i++;
+  	
+  }
+}
+var ps = infiniteParams(); // returns an iterable object
+ 
+//ps.next(); // { value: 1, done: false }
+//ps.next(); // { value: 2, done: false }
+//ps.next(); // { value: 3, done: false }
+console.log(ps.next())
+console.log(ps.next())
+console.log(ps.next())
+console.log(ps.next())
+console.log('-------Generators 生成器 end-------');
+console.log('-------Promise -------');
+var pro =10;
+var p = new Promise(function(resolve, reject) {  
+  if (/* condition */) {
+    // fulfilled successfully
+    resolve(/* value */);  
+  } else {
+    // error, rejected
+    reject(/* reason */);  
+  }
+});
 	</script>	
 </a>
 <script type="text/javascript">
