@@ -6,7 +6,7 @@ import picker from '@/components/test/picker'
 import msgBox from '@/components/test/msgBox'
 import loadMore from '@/components/test/loadMore'
 import upLoadImg from '@/components/test/upLoadImg'
-import timePicker from '@/components/test/timePicker'
+import weUI from '@/components/test/weUI'
 import vRouter from '@/components/test/vRouter'
 
 Vue.use(Router)
@@ -48,11 +48,11 @@ export default new Router({
       name: 'upLoadImg',
       component: upLoadImg
     },
-    //timePicker
+    //weUI
     {
-      path: '/test/timePicker',
-      name: 'timePicker',
-      component: timePicker
+      path: '/test/weUI',
+      name: 'weUI',
+      component: weUI
     },
     //vRouter
     {

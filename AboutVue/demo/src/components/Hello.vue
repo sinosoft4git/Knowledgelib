@@ -13,7 +13,7 @@
       <li><a href="#/test/msgBox" target="_self">msgBox实例展示</a></li>
       <li><a href="#/test/loadMore" target="_self">loadMore实例展示</a></li>
       <li><a href="#/test/upLoadImg" target="_self">upLoadImg实例展示</a></li>
-      <li><a href="#/test/timePicker" target="_self">timePicker实例展示</a></li>
+      <li><a href="#/test/weUI" target="_self">weUI实例展示</a></li>
       <li><a href="#/test/vRouter" target="_self">vuex实例展示</a></li>
     </ul>
     <div>
