@@ -1,6 +1,3 @@
-一．	摘要
-测试地址：http://app-t.healthservice.mobile.taikang.com/shop/index.html#/login
-测试账号：dpc1001/dpc6688、jskq001/js1166 
 1、传输过程泄露
 问题描述：安全测试人员发现，认证过程中传输未加密（用户名密码等敏感数据明文传输）。
 测试过程：对认证过程请求的数据包进行截断
