@@ -1,0 +1,289 @@
+1.多个全局的function放在一起 
+Eg:
+var user；
+function getUserInfo(){
+  return user;
+}
+
+function setUserInfo(name,age){
+   user={‘name’:name,’age’:age}
+}
+
+*缺点：1."污染"了全局变量
+2.无法保证不与其他模块发生变量名冲突
+3.模块成员之间看不出直接关系
+
+2.对象的写法：模块即是一个对象，所有模块成员都放到这个对象里面
+
+var person=new Object({
+    user:{},
+    setUserInfo:function(name,age){},
+    getUserInfo:function(){}   
+})
+
+调用：person.getUserInfo();
+*发展：解决以上存在的3点问题，但产生了新的问题
+缺点：1.暴露所有模块成员 2.内部状态可以被改写
+
+3.立即执行函数(Immediately-Invoked Function Expression IIFE)
+eg:
+ var person=(function(){
+    var user={};
+    var setUserInfo=function(name,age){};
+    var getUserInfo=function(){};
+    return {
+        setUserInfo:setUserInfo,
+        getUserInfo:getUserInfo
+    }
+ })();
+
+ 调用：console.log(person.user);//undefined
+ 发展：私有成员外部代码无法读取
+
+ 4.立即执行函数的放大模式(augmentation)
+ eg
+ var person=(function(p){
+     p.m3=function(){
+     
+     }
+     return p;
+ })(person);
+
+ *如果一个模块很大，必须分成几部分；
+ 或者一个模块需要继承另一个模块
+
+ 6.立即执行函数的宽放大模式(Loose augmentation)
+ var person=(function(p){
+    p.m3=function(){
+    
+    }
+    return p;
+})(window.person||{});
+*发展：函数的入参可以是空对象
+
+7.输入全局变量
+var module=(function($,Y){
+    //...
+})(jQuery,Y)
+发展：1.模块具有独立性，模块内部最好不与其他部分直接交互。
+2.将全局变量显示的传入模块中，然后在模块内调用
+3.jQuery风格的匿名自执行函数
+===================================
+小结：
+1.如何安全的包装一个模块的代码？ 不增加全局变量
+2.如何唯一标识一个模块？简洁特殊的名称，多个名称
+3.如何优雅的把模块的API暴露出去？（不增加全局变量）
+4.如何方便的使用所依赖的模块？
+
+********
+这种风格虽然灵活了些，但并未解决根本问题：所需依赖还是得外部提前提供、还是增加了全局变量。
+
+模块化要解决的问题 
+- 封装，模块内的代码不能污染其他模块。 
+- 标识，唯一的标识一个模块。 
+- 导出，将模块内的API暴露出去。 
+- 引入，引入其他模块的API。
+=====================================
+1.来自nodejs的规范 commonJs
+//math.js
+exports.add=function(){
+
+}
+//increment.js
+var add=require('math').add;
+exports.increment=function(){}
+ 特点：
+ 1.定义全局函数require，通过传入标识来引入其他模块；
+ 执行结果为别的模块暴露出来的API
+ 2.require失败，报异常
+ 3.模块通过exports向外暴露API;exports的是一个对象
+ ，暴露的API作为此对象的属性
+
+Modules/1.0 服务器端向前端进军
+0.源于服务端无法直接用于浏览器端
+-1.外层没有function包裹，变量全暴漏在全局。如上 increment.js中add
+-2.资源的加载与服务器端完全不同。服务端require一个模块，直接从硬盘或者内存读取，消耗时间可以忽略。
+而浏览器，需要从服务端来下载这文件，然后运行里面的代码才能得到API，需要花费一个http
+也就是说，require后面的一行代码，需要资源请求完成才能执行。由于浏览器是以插入<script>标签的形式来加载资源的，
+没法让代码同步执行，所以？？？commonjs那样的写法会直接报错？？？
+
+·commonjs分派
+1. 1.x派
+通过工具把现有模块转化为符合浏览器上使用的模块（如：browserify，可以把nodejs编译成浏览器可用的模块）
+2. async派--通过下载回调实现异步（即AMD思想基础）
+3. 2.0 派
+--保留：通过require来声明依赖；模块的预加载以及通过return 可以暴露任意类型的数据
+***1.全局有一个module变量，用来定义模块 2.module.declare方法来定义一个模块  
+    3.module.declare方法直接收一个参数 factory(可以是对象也可以是方法)
+    4.factory函数传入三个参数 require exports module用来引入其他以来和到处本模块API
+eg：
+//可以使用exprots来对外暴漏API
+module.declare(function(require, exports, module)
+{
+    exports.foo = "bar";
+});
+//也可以直接return来对外暴漏数据
+module.declare(function(require)
+{
+return { foo: "bar" };
+});
+
+2.AMD/RequireJS--异步加载所需的模块，在回掉中执行主逻辑。
+内容：
+1. 用全局函数define来定义模块，用法为：define(id?, dependencies?, factory);
+2. id为模块标识，遵从CommonJS Module Identifiers规范
+3. dependencies为依赖的模块数组，在factory中需传入形参与之一一对应
+4. 如果dependencies的值中有"require"、"exports"或"module"，则与commonjs中的实现保持一致
+5. 如果dependencies省略不写，则默认为["require", "exports", "module"]，factory中也会默认传入require,exports,module
+6. 如果factory为函数，模块对外暴漏API的方法有三种：return任意类型的数据、exports.xxx=xxx、module.exports=xxx
+7. 如果factory为对象，则该对象即为模块的返回值
+
+eg1:
+// a.js
+define(function(){
+    console.log('a.js执行');
+     return {
+          hello: function(){console.log('hello, a.js');}
+     }
+})
+// b.js
+define(function(){
+    console.log('b.js执行');
+     return {
+          hello: function(){console.log('hello, b.js');}
+     }
+})
+//main.js
+require(['a','b'],function(a,b){
+    console.log('main.js 执行');
+    a.hello();
+    $('#b').click(function(){
+        b.hello();
+    });
+});
+
+/*
+a.js执行
+b.js执行
+main.js执行
+hello,a.js
+点击b  hello,b.js
+ */
+
+ eg2：//懒加载思想
+ define(function(){
+    console.log('main2.js 执行');
+    require(['a'],function(a){
+        a.hello();
+    });
+    $('#b').click(function(){
+        require(['b'],function(b){
+            b.hello();
+        });
+    });
+ })
+ /**
+  * main2.js 执行
+  a.js执行
+  hello,a.js
+  点击b--->  b.js执行 hello,b.js 
+  */
+
+  eg3://XXXXX资源的下载预先进行，资源执行后置-----
+  //d.js
+  define(function(require,exports,module){
+      console.log('d.js 执行');
+      return{
+          helloA:function(){
+              var a=require('a');//****  预先加载
+              a.hello();//执行置后
+          },
+          run:function(){
+              $('#b').click(function(){
+                  var  b=require('b');
+                  b.hello();
+              });
+          }
+      }
+  });
+  //调用 d.js
+  require(['d'],function(d){});
+  /*输出----有问题
+  a.js执行
+  b.js执行
+  d.js执行 
+  */
+
+3. CMD/sea.js--淘宝前端玉伯
+eg：
+//a.js
+define(function(require,exports,module){
+    console.log('a.js 执行');
+    return{
+        hello：function(){
+            console.log('hello , a.js');
+        }
+    }
+});
+//b.js
+define(function(require,exports,module){
+    console.log('b.js 执行');
+    return{
+        hello：function(){
+            console.log('hello , b.js');
+        }
+    }
+});
+//main.js
+define(function(require,exports,module){
+    console.log('main.js 执行');
+    var a=require('a');
+    a.hello();
+    $('#b').click(function(){
+        var b=require('b');
+        b.hello();
+    });
+});
+/* 输出
+main.js 执行
+a.js 执行
+hello, a.js
+点击b ----> b.js 执行   hello, b.js
+*/
+************
+var  b=require.async('b');
+b.hello();
+***************
+
+4.ES6模式---面向对象标准
+模块定义---对外提供接口，使用export导出即可;使用import导入
+eg：
+//方式一：
+export var a=1;
+export var obj={}
+export function run(){}
+
+//方式二
+var a=1;
+var obj={};
+function run(){}
+export {a,b,run}
+
+import {run as running} from 'a'
+running();
+
+
+
+
+
+
+
+
+参考：https://www.cnblogs.com/lvdabao/p/js-modules-develop.html
+
+
+
+
+
+
+
